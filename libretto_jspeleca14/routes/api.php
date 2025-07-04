@@ -1,16 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ReviewController; 
-use App\Http\Controllers\GenreController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\AuthorController;
+use App\Http\Controllers\Api\GenreController;
 
+use App\Http\Controllers\Api\AuthController;
+
+Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
-
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:custom')->group(function () {
     Route::apiResource('reviews', ReviewController::class);
-    Route::resource('books', BookController::class);
-    Route::resource('authors', AuthorController::class);
-    Route::resource('genres', GenreController::class);
+    Route::apiResource('books', BookController::class);
+    Route::apiResource('authors', AuthorController::class);
+    Route::apiResource('genres', GenreController::class);
 });

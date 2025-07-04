@@ -9,7 +9,7 @@ class ReviewController extends Controller
 {
     public function index()
     {
-        return response()->json(Review::with('book')->get());
+        return response()->json(Review::all());
     }
 
     public function store(Request $request)
@@ -26,7 +26,7 @@ class ReviewController extends Controller
 
     public function show($id)
     {
-        $review = Review::with('book')->findOrFail($id);
+        $review = Review::findOrFail($id);
         return response()->json($review);
     }
 
