@@ -84,7 +84,14 @@ class SimpleAuthController extends Controller
 
         $user = Auth::user();
 
-        // Check if user has existing valid tokens using raw queries
+        // First, delete all expired tokens for this user
+        DB::table('personal_access_tokens')
+            ->where('tokenable_type', get_class($user))
+            ->where('tokenable_id', $user->id)
+            ->where('expires_at', '<=', Carbon::now())
+            ->delete();
+
+        // Check if user has existing valid tokens
         $validToken = DB::table('personal_access_tokens')
             ->where('tokenable_type', get_class($user))
             ->where('tokenable_id', $user->id)
@@ -92,7 +99,7 @@ class SimpleAuthController extends Controller
             ->first();
         
         if ($validToken) {
-            // Return response indicating existing valid token exists
+            // Return existing valid token info
             return response()->json([
                 'message' => 'Login successful - using existing token',
                 'token_type' => 'Bearer',
@@ -106,17 +113,17 @@ class SimpleAuthController extends Controller
             ]);
         }
 
-        // Delete all expired tokens for this user
+        // No valid token exists, create a new one
+        // Delete any remaining tokens to ensure single token per user
         DB::table('personal_access_tokens')
             ->where('tokenable_type', get_class($user))
             ->where('tokenable_id', $user->id)
-            ->where('expires_at', '<=', Carbon::now())
             ->delete();
         
         // Create new token
         $tokenName = 'auth_token';
         $abilities = ['*'];
-        $expiresAt = Carbon::now()->addDay();
+        $expiresAt = Carbon::now()->addDay(); // 24 hours expiry
         
         // Generate random token
         $plainTextToken = \Illuminate\Support\Str::random(40);

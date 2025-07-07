@@ -16,7 +16,7 @@ Route::post('register', [SimpleAuthController::class, 'register']);
 Route::post('login', [SimpleAuthController::class, 'login']);
 
 // Protected routes requiring authentication
-Route::middleware(['auth:sanctum', 'token.expiry'])->group(function () {
+Route::middleware(['auth:sanctum', 'token.expired'])->group(function () {
     // Test auth route
     Route::get('test-auth', [TestController::class, 'testAuth']);
     

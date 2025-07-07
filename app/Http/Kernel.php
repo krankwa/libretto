@@ -43,6 +43,7 @@ class CustomKernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.custom' => \App\Http\Middleware\AuthMiddleware::class,
-        'token.expiry' => \App\Http\Middleware\CheckTokenExpiration::class,
+        'token.expired' => \App\Http\Middleware\CheckTokenExpired::class,
+        // 'token.expiry' => \App\Http\Middleware\CheckTokenExpiration::class,
     ];
 }
