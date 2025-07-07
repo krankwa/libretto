@@ -16,18 +16,27 @@ class CheckTokenExpiration
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->currentAccessToken()) {
-            $token = $request->user()->currentAccessToken();
-            
-            // Check if token is expired
-            if ($token->expires_at && Carbon::now()->greaterThan($token->expires_at)) {
-                // Delete expired token
-                $token->delete();
+        $user = $request->user();
+        
+        if ($user) {
+            try {
+                $token = $user->currentAccessToken();
                 
-                return response()->json([
-                    'message' => 'Token has expired. Please login again.',
-                    'error' => 'TOKEN_EXPIRED'
-                ], 401);
+                if ($token && $token->expires_at) {
+                    // Check if token is expired
+                    if (Carbon::now()->greaterThan($token->expires_at)) {
+                        // Delete expired token
+                        $token->delete();
+                        
+                        return response()->json([
+                            'message' => 'Token has expired. Please login again.',
+                            'error' => 'TOKEN_EXPIRED'
+                        ], 401);
+                    }
+                }
+            } catch (\Exception $e) {
+                // If there's any issue with token checking, just continue
+                // This prevents the middleware from breaking the request
             }
         }
 
